@@ -16,17 +16,29 @@ class OrdersController extends ActiveController
 
     }
     public function actionOrdering(){
-        $request = Yii::$app->request;
+            $request = Yii::$app->request;
+            $max_id = Orders::find()->select('id')->orderBy('id DESC')->limit(1)->one();
 
+            $x = new Orders();
+            $x->id = $max_id->id+1;
+            $x->room_id = $request->post('room_id');
+            $x->date_start = $request->post('date_start');
+            $x->date_finish = $request->post('date_finish');
+            $x->guests_count = $request->post('guests_count');
+            $x->customer_phone = $request->post('customer_phone');
+//
 
-
-
-        $model=Orders::find()->where(['room_id'=>$request->post('room_id')])->all();
+        $model=Orders::find()->where(['room_id'=>$x->room_id])->all();
         foreach ($model as $order):{
-            if (!($request->post('date_start') >= $order->date_finish) || !($request->post('date_finish') <= $order->date_start))
+            if ((($x->date_start >= $order->date_start) & ($x->date_start < $order->date_finish))
+                || (($x->date_finish > $order->date_start) & ($x->date_finish <= $order->date_finish)))
                 return 'Есть пересечения';
-            else return 'ok';}
+
+        }
+
         endforeach;
-    }
+        $x->save();
+        return ('Бронирование успешно');
+}
 
 }
