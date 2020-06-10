@@ -26,7 +26,6 @@ class OrdersController extends ActiveController
             $x->date_finish = $request->post('date_finish');
             $x->guests_count = $request->post('guests_count');
             $x->customer_phone = $request->post('customer_phone');
-//
 
         $model=Orders::find()->where(['room_id'=>$x->room_id])->all();
         foreach ($model as $order):{
